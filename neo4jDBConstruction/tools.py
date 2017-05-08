@@ -30,7 +30,7 @@ def make_lst_into_file(filename, lst):
 ## Specific function - should not be used for general purpose.
 def make_file_into_lst(filename):
     f = open(filename, 'r')
-    f.readlines
+    f = f.readlines()
     lst = [ x[:-1] for x in f ]
     new_lst = []
     for elem in lst:

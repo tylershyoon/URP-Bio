@@ -1,0 +1,41 @@
+[2017-05-08]
+Tested Round 1 & Round 2
+    Round 1: retrieved data from hg38 public db, solely from knownGene
+    Round 2: retrieved data from knownGene natural join kgXref
+    R1 & R2 both yielded 246 tuples
+    -> No data loss when join two table
+    -> Add Round 2 two more attributes from kgXref(geneSymbol, refseq)
+    to be stored
+    Until now we have 246 tuples - retrieved from ucsc IDs
+    => knownGene.name & kgXref.kgID
+
+To check how many genes are processed with Round 2,
+made R2 return the list of ucsc genes, count the number of elements in set.
+=> exactly 246, no duplicates
+
+Among 246 genes,
+['uc003bzm.1', 'uc001jts.1', 'uc002fmz.1', 'uc003hbs.1', 'uc002qqs.1', 'uc001ukz.1', 'uc001kqq.1', 'uc001pkb.1', 'uc002qnz.1', 'uc002olz.1', 'uc002anc.1', 'uc001ccf.1']
+12 genes above are only non changed genes.
+all other 234 genes has upper version-ed ucsc gene id.
+
+
+Possible Round 3
+-> Tested with unknown Genes
+there were many with refseq that start with NM_~
+those are searchable in knownGene as well as kgXref
+but their ucsc gene ID were different from the one in excel file.
+
+But tried to retrieve them since their name and refseq were same.
+
+-> 45(1)/87 retrieved
+NM_032160 -> two tuple obtained
+42 remained unknown
+
+Round 4-2
+used all_mrna table.
+26 distinct genes were found
+
+
+=> 16 left unknown.
+
+

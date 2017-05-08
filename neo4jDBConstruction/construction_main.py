@@ -3,6 +3,9 @@ import xlrd
 from py2neo import Node, Relationship
 from py2neo import Graph, Path
 from py2neo.ogm import *
+import pymysql
+import tools
+import file_retrieval
 
 ############################################################
 # SUBTASK(1) Neo4j DB construction
@@ -46,6 +49,7 @@ def neo4j_initial_const():
         excelTupleNode = Node("")
 
 
+neo_connection()
 
-neo4j_initial_const()
+#neo4j_initial_const()
 

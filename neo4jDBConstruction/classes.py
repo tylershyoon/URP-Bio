@@ -49,7 +49,7 @@ class knownGene(GraphObject):
     intron1 = RelatedTo("region")
 
     '''
-    Properties belong to the excel file - emboj
+    Properties belong to the
     '''
     chromosome = Property()
     strand = Property()
