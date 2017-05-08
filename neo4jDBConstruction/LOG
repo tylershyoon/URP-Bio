@@ -35,7 +35,8 @@ Round 4-2
 used all_mrna table.
 26 distinct genes were found
 
+=> 16 genes are left unknown.
 
-=> 16 left unknown.
 
-
+[2017-05-09]
+Will create class for Rounds, upload to neo4j database.
