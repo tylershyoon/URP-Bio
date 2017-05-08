@@ -33,7 +33,7 @@ print ucsc_mysql.exception_lst
 #roun2lst = ucsc_mysql.Round2(ucscs)
 
 
-'''f = open("Round2.txt",'r')
+'''f = open("Round2",'r')
 r2ucsclst = []
 
 for line in f:
@@ -61,7 +61,7 @@ new_ucsc_lst = ucsc_mysql.Round3(unknown_after_r2)
 '''
 
 #preprocessing for ROUND 4 -> saved in file_retrieval R3 result
-'''f = open("Round3.txt","r")
+'''f = open("Round3","r")
 lst = []
 f = f.readlines()
 for line in f:

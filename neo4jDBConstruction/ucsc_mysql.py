@@ -60,7 +60,7 @@ def query_execution(conn, f, query, lst):
 ''' Round 1 - hg38 schema -> knownGene Table using ucsc gene ID '''
 def Round1(ucsc_lst):
     conn = connect('hg38')
-    R1 = open("Round1.txt", "w")
+    R1 = open("Round1", "w")
     s=['K.name', 'K.chrom', 'K.strand', 'K.txStart', 'K.cdsStart', 'K.cdsEnd', 'K.txEnd', 'K.exonCount', 'K.exonStarts', 'K.exonEnds']
     f=['knownGene as K']
     w=['K.name!="" AND']
@@ -78,7 +78,7 @@ def Round1(ucsc_lst):
 ''' Round 2 - hg38 schema -> knownGene join kgXref'''
 def Round2(ucsc_lst):
     conn = connect('hg38')
-    R2 = open("Round2.txt", "w")
+    R2 = open("Round2", "w")
     s = ['K.name', 'X.geneSymbol', 'X.refseq', 'K.chrom', 'K.strand', 'K.txStart', 'K.cdsStart', 'K.cdsEnd', 'K.txEnd', 'K.exonCount',
          'K.exonStarts', 'K.exonEnds']
     f = ['kgXref as X', 'knownGene as K']
@@ -103,7 +103,7 @@ kgXref natural join with knownGene
 '''
 def Round3(unknown_after_r2):
     conn = connect('hg38')
-    R3 = open("Round3.txt", "w")
+    R3 = open("Round3", "w")
     s = ['K.name', 'X.geneSymbol', 'X.refseq', 'K.chrom', 'K.strand', 'K.txStart', 'K.cdsStart', 'K.cdsEnd', 'K.txEnd',
          'K.exonCount',
          'K.exonStarts', 'K.exonEnds']
@@ -140,7 +140,7 @@ def query_execution_R4_2(conn, f, query, lst):
 
 def Round4_2(unknown_after_r3):
     conn = connect('hg38')
-    R4 = open("Round4_2.txt", "w")
+    R4 = open("Round4_2", "w")
     s = ['A.qName', 'A.tName', 'A.strand', 'A.tStart', 'A.tEnd', 'A.blockCount', 'A.BlockSizes', 'A.tStarts', 'A.qStarts']
     f = ['all_mrna as A']
     w = []
