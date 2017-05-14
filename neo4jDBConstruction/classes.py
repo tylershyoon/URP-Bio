@@ -49,6 +49,10 @@ class knownGene(GraphObject):
     intron1 = RelatedTo("region")
 
 class region(GraphObject):
+    def __copy__(self):
+        return self
+    def __deepcopy__(self, memo):
+        return self
     __primarykey__ = "ucscGene"
     ucscGene = Property()
     indicator = Property()
@@ -58,7 +62,7 @@ class region(GraphObject):
     end = Property()
     length = Property()
 
-    E = RelatedFrom("Gene", "EXON1") # gene -> exon
+    E = RelatedFrom("knownGene", "EXON1") # gene -> exon
 
     EEFrom = RelatedFrom("region", "EE")
     EE = RelatedTo("region")

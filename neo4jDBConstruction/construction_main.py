@@ -7,6 +7,7 @@ import pymysql
 import tools
 import file_retrieval
 import ast
+import copy
 ############################################################
 # SUBTASK(1) Neo4j DB construction
 
@@ -22,9 +23,8 @@ import ast
 
 def neo_connection():
     graph = Graph("http://neo4j:neo4jpwd@localhost:7474")
-    tx = graph.begin()
     print "connected ! "
-    return tx, graph
+    return graph
 
 def neo_commit(tx):
     tx.commit()
@@ -50,48 +50,55 @@ def neo4j_initial_const():
         exceltuple['properties']['Edited'] = ws.row_values(row_num)[6][1:]
         excelTupleNode = Node("")
 
-
-def neo_knownGene(tx, graph):
-    r2 = open("Round2", "r")
+# For round 2,3
+def neo_knownGene(graph, roundName):
+    r2 = open(roundName, "r")
     nodeslst = r2.readlines()
 
     for node in nodeslst:
-        G = classes.knownGene()
+        #G = classes.knownGene()
         g = ast.literal_eval(node)
-
-        G.ucscGene = g[0]; G.geneSymbol = g[1]; G.accession = g[2]; G.chrom = g[3]
-        G.strand = g[4]; G.txStart = g[5]; G.cdsStart = g[6]; G.cdsEnd = g[7]; G.txEnd = g[8]
-        G.exonNum = g[9]
-
-        tx.merge(G)
+        gene = Node("knownGene", ucscGene=g[0], geneSymbol=g[1], accession=g[2], chrom=g[3],
+                 strand=g[4], txStart=g[5], cdsStart=g[6], cdsEnd=g[7], txEnd=g[8], exonNum=g[9], roundName=roundName)
+        graph.create(gene)
+        print "gene created"
 
         exonStarts =  ['starts: '] + [ long(e) for e in g[10].rstrip().split(" ") ]
         exonEnds = ['ends: '] + [ long(e) for e in g[11].rstrip().split(" ") ]
 
-        # number of exons
-        prev_exon = classes.region()
-        for i in range(1, int(g[9])+1):
-            exon = classes.region()
-            exon.ucscGene = g[0]
-            exon.indicator = 'exon' + str(i)
-            exon.chrom = g[3]
-            exon.start = exonStarts[i]
-            exon.end = exonEnds[i]
-            exon.length = exonEnds[i] - exonEnds[i]
+        exons = ['exons: '] + [ 0 for e in range(g[9])]
+        if g[4] == '+':
+            print "entered + "
+            for i in range(1, int(g[9])+1):
+                exons[i] = Node("exon"+str(i), ucscGene=g[0], indicator='exon'+str(i), chrom=g[3], start=exonStarts[i], end=exonEnds[i], length=exonEnds[i]-exonStarts[i])
+                if i == 1:
+                    E1 = Relationship(gene, "E1", exons[i])
+                    graph.create(E1)
+                else:
+                    EE = Relationship(exons[i-1], "E->E", exons[i])
+                    graph.create(EE)
+                if i == int(g[9]):
+                    utr3 = Node("utr3", cdsEnd=g[7], txEnd=g[8])
+                    graph.create(utr3)
+                    EU = Relationship(exons[i], "E->U", utr3)
+                    graph.create(EU)
+        else: # (-) strand
+            print "entered - "
+            for i in range(int(g[9]), 0, -1):
+                exons[i] = Node("exon" + str(int(g[9])-i+1), ucscGene=g[0], indicator='exon' + str(int(g[9])-i+1), chrom=g[3],
+                                start=exonStarts[i], end=exonEnds[i], length=exonEnds[i] - exonStarts[i])
+                if i == int(g[9]):
+                    E1 = Relationship(gene, "E1", exons[i])
+                    graph.create(E1)
+                else:
+                    EE = Relationship(exons[i+1], "E->E", exons[i])
+                    graph.create(EE)
+                if i == 1:
+                    utr3 = Node("utr3", txStart=g[5], cdsStart=g[6])
+                    graph.create(utr3)
+                    EU = Relationship(exons[i], "E->U", utr3)
+                    graph.create(EU)
 
-            tx.merge(exon)
-            # indicates 'exon1' stretched out from gene node to exon 1 node
-            if i == 1:
-                G.exon1.add(exon)
-                tx.graph.push(G)
-            else:
-                prev_exon.EE.add(exon)
-                tx.graph.push(G)
-            prev_exon = exon
-
-        #graph.push(G)
-
-
-tx, graph = neo_connection()
-
-neo_knownGene(tx, graph)
+graph = neo_connection()
+neo_knownGene(graph, 'Round2')
+neo_knownGene(graph, 'Round3')
