@@ -33,126 +33,32 @@ exceltuple = {
 }
 
 class knownGene(GraphObject):
-    __primarykey__ = ""
+    __primarykey__ = "ucscGene"
+
+    ucscGene = Property(); geneSymbol = Property(); accession = Property(); chrom = Property();
+    strand = Property(); txStart = Property(); txEnd = Property(); cdsStart = Property()
+    cdsEnd = Property(); exonNum = Property(); exonStarts = Property(); exonEnds = Property()
     '''
     Properties belong to the excel file - emboj
     '''
-    ucscgene = Property()
-    Name = Property()
-    accession = Property()
     Alus = Property()
     MinINV = Property()
     Edited = Property()
 
-    five_utr = RelatedTo("region")
     exon1 = RelatedTo("region")
     intron1 = RelatedTo("region")
-
-    '''
-    Properties belong to the
-    '''
-    chromosome = Property()
-    strand = Property()
-    txStart = Property()
-    txEnd = Property()
-    CdsStart = Property()
-    CdsEnd = Property()
-    exonCount = Property()
-    exonStarts = Property()
-    exonEnds = Property()
-
-    '''
-    def __init__(self, excelattribs, ucscinfo):
-        self.excelattribsdict = {'ucscgene': '', 'Name': '', 'accession': '', 'Alus': '', 'MinINV': '', 'Edited': ''}
-        self.ucscinfodict = {}
-
-    def setExcel(self, excelClass):
-        self.excelattribsdict['ucscgene'] = excelClass.ucscgene
-        self.excelattribsdict['Name'] = excelClass.Name
-        self.excelattribsdict['accession'] = excelClass.accession
-        self.excelattribsdict['Alus'] = excelClass.Alus
-        self.excelattribsdict['MinINV'] = excelClass.MinINV
-        self.excelattribsdict['Edited'] = excelClass.Edited
-
-    def setUCSC(self):
-        pass'''
-
-class unknownGene(GraphObject):
-    __primarykey__ = ""
-    '''
-        Properties belong to the excel file - emboj
-    '''
-    ucscgene = Property()
-    Name = Property()
-    accession = Property()
-    Alus = Property()
-    MinINV = Property()
-    Edited = Property()
-
-    '''
-        Properties belong to the excel file - emboj
-    '''
-    chromosome = Property()
-    strand = Property()
-    txStart = Property()
-    txEnd = Property()
-    CdsStart = Property()
-    CdsEnd = Property()
-    exonCount = Property()
-    exonStarts = Property()
-    exonEnds = Property()
-
-    five_utr = RelatedTo("region")
-    exon1 = RelatedTo("region")
-    intron1 = RelatedTo("region")
-
 
 class region(GraphObject):
-    __primarykey__ = ""
+    __primarykey__ = "ucscGene"
+    ucscGene = Property()
     indicator = Property()
-    sequence  = Property()
+    #sequence  = Property()
+    chrom = Property()
+    start = Property()
+    end = Property()
+    length = Property()
 
-    U = RelatedFrom("Gene", "U")
-    E = RelatedFrom("Gene", "E")
-    I = RelatedFrom("Gene", "I")
-
-    UEFrom = RelatedFrom("region", "UE")
-    UETo = RelatedTo("region")
+    E = RelatedFrom("Gene", "EXON1") # gene -> exon
 
     EEFrom = RelatedFrom("region", "EE")
-    EETo = RelatedTo("region")
-
-    IEFrom = RelatedFrom("region", "IE")
-    IETo = RelatedTo("region")
-
-    EIFrom = RelatedFrom("region", "EI")
-    EITo = RelatedTo("region")
-
-    IIFrom = RelatedFrom("region", "II")
-    IITo = RelatedTo("region")
-
-    EUFrom = RelatedFrom("region", "EU")
-    EUTo = RelatedTo("region")
-
-
-'''
-class utr5(GraphObject):
-    def __init__(self):
-        self.utrNum = 5
-    gene = RelatedFrom("Gene", "U")
-
-class utr3(GraphObject):
-    def __init__(self):
-        self.utrNum = 3
-    last_exon = RelatedFrom("exon", "EU")
-    last_intron = RelatedFrom("")
-
-class exon(GraphObject):
-    gene = RelatedFrom("Gene", "E")
-    def __init__(self):
-        self.exonNum = None
-
-class intron(GraphObject):
-    intronNum = Property()
-    gene = RelatedFrom("Gene", "I")
-'''
+    EE = RelatedTo("region")
