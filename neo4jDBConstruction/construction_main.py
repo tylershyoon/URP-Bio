@@ -26,30 +26,6 @@ def neo_connection():
     print "connected ! "
     return graph
 
-def neo_commit(tx):
-    tx.commit()
-
-# will not be used
-def neo4j_initial_const():
-    '''
-        This function is for constructing neo4j nodes from records in excel file.
-    '''
-    tx, graph = neo_connection()
-    graph.delete_all()
-    ################################################
-    embojwb = xlrd.open_workbook("emboj200894s3.xls")
-    ws = embojwb.sheet_by_index(0)
-    nrows = ws.nrows
-    for row_num in range(1, nrows):
-        exceltuple = classes.exceltuple
-        exceltuple['properties']['ucscgene'] = ws.row_values(row_num)[1][1:]
-        exceltuple['properties']['Name'] = ws.row_values(row_num)[2][1:]
-        exceltuple['properties']['accession'] = ws.row_values(row_num)[3][1:]
-        exceltuple['properties']['Alus'] = int(ws.row_values(row_num)[4])
-        exceltuple['properties']['MinINV'] = int(ws.row_values(row_num)[5])
-        exceltuple['properties']['Edited'] = ws.row_values(row_num)[6][1:]
-        excelTupleNode = Node("")
-
 # For round 2,3
 def neo_knownGene(graph, roundName):
     r2 = open(roundName, "r")
@@ -75,12 +51,12 @@ def neo_knownGene(graph, roundName):
                     E1 = Relationship(gene, "E1", exons[i])
                     graph.create(E1)
                 else:
-                    EE = Relationship(exons[i-1], "E->E", exons[i])
+                    EE = Relationship(exons[i-1], "EE", exons[i])
                     graph.create(EE)
                 if i == int(g[9]):
                     utr3 = Node("utr3", cdsEnd=g[7], txEnd=g[8])
                     graph.create(utr3)
-                    EU = Relationship(exons[i], "E->U", utr3)
+                    EU = Relationship(exons[i], "EU", utr3)
                     graph.create(EU)
         else: # (-) strand
             print "entered - "
@@ -91,12 +67,12 @@ def neo_knownGene(graph, roundName):
                     E1 = Relationship(gene, "E1", exons[i])
                     graph.create(E1)
                 else:
-                    EE = Relationship(exons[i+1], "E->E", exons[i])
+                    EE = Relationship(exons[i+1], "EE", exons[i])
                     graph.create(EE)
                 if i == 1:
                     utr3 = Node("utr3", txStart=g[5], cdsStart=g[6])
                     graph.create(utr3)
-                    EU = Relationship(exons[i], "E->U", utr3)
+                    EU = Relationship(exons[i], "EU", utr3)
                     graph.create(EU)
 
 # For round 4
@@ -106,8 +82,46 @@ def neo_unknownGene(graph, roundName):
 
     for node in nodeslst:
         g = ast.literal_eval(node)
-        gene = Node("unknownGene", )
+        gene = Node("unknownGene", geneSymbol=g[0], chrom=g[1], strand=g[2], txStart=g[3], txEnd=g[4], exonNum=g[5], roundName=roundName)
+        graph.create(gene)
+        print "gene created"
 
-graph = neo_connection()
-neo_knownGene(graph, 'Round2')
-neo_knownGene(graph, 'Round3')
+        exonSizes = ['sizes: '] + [long(e) for e in g[6].rstrip().split(" ") ]
+        exonStarts = ['starts: '] + [long(e) for e in g[7].rstrip().split(" ") ]
+
+        exons = ['exons: '] + [ 0 for e in range(g[5])]
+        if g[2] == '+':
+            print "entered + "
+            for i in range(1, int(g[5])+1):
+                exons[i] = Node("exon"+str(i), geneSymbol=g[0], indicator='exon'+str(i), chrom=g[1], start=exonStarts[i], end=exonStarts[i]+exonSizes[i], length=exonSizes[i])
+                if i == 1:
+                    E1 = Relationship(gene, "E1", exons[i])
+                    graph.create(E1)
+                elif i != int(g[5]):
+                    EE = Relationship(exons[i-1], "EE", exons[i])
+                    graph.create(EE)
+                else: # last exon
+                    Elast = Relationship(exons[i-1], "EL", exons[i])
+                    graph.create(Elast)
+        else: # (-) strand
+            print "entered - "
+            for i in range(int(g[5]), 0, -1):
+                exons[i] = Node("exon"+str(int(g[5])-i+1), geneSymbol=g[0], indicator='exon'+str(int(g[5])-i+1), chrom=g[1], start=exonStarts[i], end=exonStarts[i]+exonSizes[i], length=exonSizes[i])
+                if i == int(g[5]):
+                    E1 = Relationship(gene, "E1", exons[i])
+                    graph.create(E1)
+                elif i != 1:
+                    EE = Relationship(exons[i+1], "EE", exons[i])
+                    graph.create(EE)
+                else:
+                    print exons
+                    print exons[i+1]
+                    print exons[i]
+                    Elast = Relationship(exons[i+1], "EL", exons[i])
+                    graph.create(Elast)
+
+if __name__ == "__main__":
+    graph = neo_connection()
+    neo_knownGene(graph, 'Round2')
+    neo_knownGene(graph, 'Round3')
+    neo_unknownGene(graph, 'Round4_2')
