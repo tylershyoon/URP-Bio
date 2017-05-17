@@ -99,6 +99,15 @@ def neo_knownGene(graph, roundName):
                     EU = Relationship(exons[i], "E->U", utr3)
                     graph.create(EU)
 
+# For round 4
+def neo_unknownGene(graph, roundName):
+    r = open(roundName, "r")
+    nodeslst = r.readlines()
+
+    for node in nodeslst:
+        g = ast.literal_eval(node)
+        gene = Node("unknownGene", )
+
 graph = neo_connection()
 neo_knownGene(graph, 'Round2')
 neo_knownGene(graph, 'Round3')

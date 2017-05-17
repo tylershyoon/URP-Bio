@@ -72,5 +72,7 @@ print len(list(set(lst)))
 print(lst)'''
 
 #ROUND 4_2
-unknown_after_r3 = file_retrieval.unknown_afterR3_retrieve()
+'''unknown_after_r3 = file_retrieval.unknown_afterR3_retrieve()
 new_ucsc_lst = ucsc_mysql.Round4_2(unknown_after_r3)
+'''
+
