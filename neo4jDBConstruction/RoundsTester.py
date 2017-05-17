@@ -11,15 +11,6 @@ for i in range(1, len(lst)):
     #names.append(lst[i][2])
 print "ucscs:", ucscs
 print(len(ucscs))
-#ucsc_set = list(set(ucscs))
-#names_set = list(set(names))
-'''print("UCSCS:", len(ucscs)); print("names: ", len(names));
-print(len(names_set))
-print(len(ucsc_set))
-
-print ucsc_mysql.exec_lst
-print ucsc_mysql.exception_lst
-'''
 
 #qlst = ucsc_mysql.create_select_query_lst_Round1(ucscs)
 
@@ -56,8 +47,10 @@ print("diff2 ", diff2)
 print(len(diff2))'''
 
 #ROUND 3
-'''unknown_after_r2 = file_retrieval.unknownGenes_afterR2_retrieve()
-new_ucsc_lst = ucsc_mysql.Round3(unknown_after_r2)
+print len(file_retrieval.unknownGenes)
+unknown_after_r2 = file_retrieval.unknownGenes_afterR2_retrieve()
+print len(unknown_after_r2)
+'''new_ucsc_lst = ucsc_mysql.Round3(unknown_after_r2)
 '''
 
 #preprocessing for ROUND 4 -> saved in file_retrieval R3 result

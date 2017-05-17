@@ -1,4 +1,3 @@
-from neo4jDBConstruction import classes
 import xlrd
 from py2neo import Node, Relationship
 from py2neo import Graph, Path
@@ -32,7 +31,6 @@ def neo_knownGene(graph, roundName):
     nodeslst = r2.readlines()
 
     for node in nodeslst:
-        #G = classes.knownGene()
         g = ast.literal_eval(node)
         gene = Node("knownGene", ucscGene=g[0], geneSymbol=g[1], accession=g[2], chrom=g[3],
                  strand=g[4], txStart=g[5], cdsStart=g[6], cdsEnd=g[7], txEnd=g[8], exonNum=g[9], roundName=roundName)
@@ -114,9 +112,6 @@ def neo_unknownGene(graph, roundName):
                     EE = Relationship(exons[i+1], "EE", exons[i])
                     graph.create(EE)
                 else:
-                    print exons
-                    print exons[i+1]
-                    print exons[i]
                     Elast = Relationship(exons[i+1], "EL", exons[i])
                     graph.create(Elast)
 

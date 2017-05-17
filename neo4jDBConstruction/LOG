@@ -44,3 +44,7 @@ Will create class for Rounds, upload to neo4j database.
 [2017-05-14]
 Neo4j db uploaded for round2 and round3
 
+[2017-05-18]
+Rounds has to be revisited
+=> round3 turned out that it actually contains a lot of duplicates from round 2
+
