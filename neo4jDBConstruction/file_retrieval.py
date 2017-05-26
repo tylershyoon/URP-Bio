@@ -1,5 +1,5 @@
 # -*- coding: cp949 -*-
-
+import csv
 import xlrd
 import tools
 
@@ -16,11 +16,44 @@ def excel_retrieve(filename):
         #print ws.row_values((row_num))
         row_val.append(ws.row_values(row_num))
     return_lst = tools.encode_lst(row_val)
-    # PRINT LST
-    #tools.print_lst(return_lst)
-    ALU_in_3UTR_names = [elem for elem in return_lst]
-    #print ALU_in_3UTR_names
     return return_lst
+
+def names_in_Round(filename):
+    f = open(filename, 'r')
+    f = f.readlines()
+    if filename in ['Round2', 'Round4_2']:
+        f = [ e[2:10] for e in f]
+    elif filename in ['Round3', 'R3_in_R2']:
+        f = [ e.split(',')[2][2:-1] for e in f]
+    return f
+
+def excel_retrieve_csv(filename):
+    csvresult = open('test.csv', 'wb')
+    writer = csv.writer(csvresult, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+    default = excel_retrieve(filename)
+    nameR2 = names_in_Round('Round2')
+    print nameR2
+    for elem in default:
+        if elem[1][:-2] in nameR2:
+            elem += ['II']
+        else:
+            elem += [""]
+        if elem[3] in names_in_Round('Round3'):
+            elem += ['III']
+        else:
+            elem += [""]
+        if elem[3] in names_in_Round('R3_in_R2'):
+            elem += ["???"]
+        else:
+            elem += [""]
+        if elem[3] in names_in_Round('Round4_2'):
+            elem += ["XI"]
+        else:
+            elem += [""]
+        writer.writerow(elem[1:])
+
+if __name__ == "__main__":
+    excel_retrieve_csv('emboj200894s3.xls')
 
 ''' Hard coded data - remain unknown genes after round 2 ! => For Round 3 '''
 unknownGenes = [

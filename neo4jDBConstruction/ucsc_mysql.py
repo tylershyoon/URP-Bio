@@ -83,7 +83,7 @@ def query_execution_round3(conn, f, query, lst):
             newrow.append(row[i])
         newrow.append(' '.join(row[10].split(',')))
         newrow.append(' '.join(row[11].split(',')))
-        if newrow not in R2:
+        if newrow in R2:
             lst.append(row[0])
             f.write(str(newrow))
             f.write("\n")
@@ -137,7 +137,7 @@ kgXref natural join with knownGene
 '''
 def Round3(unknown_after_r2):
     conn = connect('hg38')
-    R3 = open("Round3", "w")
+    R3 = open("R3_in_R2", "w")
     s = ['K.name', 'X.geneSymbol', 'X.refseq', 'K.chrom', 'K.strand', 'K.txStart', 'K.cdsStart', 'K.cdsEnd', 'K.txEnd',
          'K.exonCount',
          'K.exonStarts', 'K.exonEnds']
@@ -147,9 +147,7 @@ def Round3(unknown_after_r2):
     lst = []
     for tuple in unknown_after_r2:
         refseq_match = 'X.refseq like "' + tuple[2] + '"'
-        #ucsc_match = 'X.kgID like "' + tuple[0][:-2] +'%"'
         w.append(refseq_match)
-        #w.append(ucsc_match)
         ss, fs, ws = lst_to_str(s, f, w)
         Q = 'SELECT ' + ss + ' FROM ' + fs + ' WHERE ' + ws
         print Q

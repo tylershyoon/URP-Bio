@@ -4,7 +4,7 @@ from py2neo import Graph, Path
 from py2neo.ogm import *
 import pymysql
 import tools
-import file_retrieval
+#import file_retrieval
 import ast
 import copy
 ############################################################
@@ -117,6 +117,6 @@ def neo_unknownGene(graph, roundName):
 
 if __name__ == "__main__":
     graph = neo_connection()
-    neo_knownGene(graph, 'Round2')
-    neo_knownGene(graph, 'Round3')
-    neo_unknownGene(graph, 'Round4_2')
+    #neo_knownGene(graph, 'Round2')
+    #neo_knownGene(graph, 'Round3')
+    #neo_unknownGene(graph, 'Round4_2')
