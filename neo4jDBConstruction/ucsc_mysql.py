@@ -1,6 +1,7 @@
 import file_retrieval
 import pymysql
 import tools
+import ast
 
 
 # DB -> 'hg38' / Patch number annotated til Patch9 => 'hg38Patch9'
@@ -44,6 +45,19 @@ def sfw_example():
     close(a)
 
 ''' Query Execution for R1 to R3 '''
+def query_execution_round1(conn, f, query, lst):
+    curs = execute(conn, query)
+    for row in curs:
+        print(row)
+        newrow = []
+        for i in range(8):
+            newrow.append(row[i])
+        newrow.append(' '.join(row[8].split(',')))
+        newrow.append(' '.join(row[9].split(',')))
+        lst.append(row[0])
+        f.write(str(newrow))
+        f.write("\n")
+
 def query_execution(conn, f, query, lst):
     #conn = connect('hg38')
     curs = execute(conn, query)
@@ -57,6 +71,25 @@ def query_execution(conn, f, query, lst):
         f.write(str(newrow))
         f.write("\n")
 
+def query_execution_round3(conn, f, query, lst):
+    #conn = connect('hg38')
+    R2 = open("Round2","r")
+    R2 = R2.readlines()
+    R2 = [ast.literal_eval(e) for e in R2]
+    curs = execute(conn, query)
+    for row in curs:
+        newrow = []
+        for i in range(10):
+            newrow.append(row[i])
+        newrow.append(' '.join(row[10].split(',')))
+        newrow.append(' '.join(row[11].split(',')))
+        if newrow not in R2:
+            lst.append(row[0])
+            f.write(str(newrow))
+            f.write("\n")
+        else:
+            print "BATS!!!!"
+
 ''' Round 1 - hg38 schema -> knownGene Table using ucsc gene ID '''
 def Round1(ucsc_lst):
     conn = connect('hg38')
@@ -66,14 +99,15 @@ def Round1(ucsc_lst):
     w=['K.name!="" AND']
     lst = []
     for ucsc in ucsc_lst:
-        ucsc_match = 'K.name like "' + ucsc[:-1] + '%"'
+        ucsc_match = 'K.name like "' + ucsc[:-2] + '%"'
         w.append(ucsc_match)
         ss, fs, ws = lst_to_str(s, f, w)
         Q = 'SELECT ' + ss + ' FROM ' + fs + ' WHERE ' + ws
         print Q
-        query_execution(conn, R1, Q, lst)
+        query_execution_round1(conn, R1, Q, lst)
         w = w[:-1]
     R1.close()
+    return lst
 
 ''' Round 2 - hg38 schema -> knownGene join kgXref'''
 def Round2(ucsc_lst):
@@ -109,14 +143,17 @@ def Round3(unknown_after_r2):
          'K.exonStarts', 'K.exonEnds']
     f = ['kgXref as X', 'knownGene as K']
     w = ['K.name=X.kgID AND', 'X.refseq!="" AND']
+
     lst = []
     for tuple in unknown_after_r2:
         refseq_match = 'X.refseq like "' + tuple[2] + '"'
+        #ucsc_match = 'X.kgID like "' + tuple[0][:-2] +'%"'
         w.append(refseq_match)
+        #w.append(ucsc_match)
         ss, fs, ws = lst_to_str(s, f, w)
         Q = 'SELECT ' + ss + ' FROM ' + fs + ' WHERE ' + ws
         print Q
-        query_execution(conn, R3, Q, lst)
+        query_execution_round3(conn, R3, Q, lst)
         w = w[:-1]
     R3.close()
     return lst
