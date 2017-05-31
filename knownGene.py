@@ -47,13 +47,15 @@ class knownGene():
                 if r['n.strand'] == '+':
                     try:
                         exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['exon.start'], r['n.cdsEnd'])
+                        exonCounts[r['exon.indicator']]['length'] = r['exon.length']
                     except:
-                        print "UtR overlaps (+) XXXXXXXXXXXXXXXXXXXX"
+                        print "UTR overlaps (+) XXXXXXXXXXXXXXXXXXXX"
                         exonCounts[r['exon.indicator']]['count'] = 'exclude'
                         exonCounts[r['exon.indicator']]['length'] = 'exclude'
                 else: # 'n.strand' == '-'
                     try:
                         exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['n.cdsStart'], r['exon.end'])
+                        exonCounts[r['exon.indicator']]['length'] = r['exon.length']
                     except:
                         print "UTR overlaps ??????????????????????? (-) strand "
                         exonCounts[r['exon.indicator']]['count'] = 'exclude'

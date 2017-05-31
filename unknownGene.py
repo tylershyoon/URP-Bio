@@ -47,6 +47,12 @@ class unknownGene():
         for r in results:
             exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['exon.start'], r['exon.end'])
             exonCounts[r['exon.indicator']]['length'] = r['exon.length']
+        cypher_last_exon = "MATCH (u:unknownGene{geneSymbol:'" + self.geneSymbol + \
+                 "'})-[:E1]-(exon1)-[:EE*]-(exons)-[:EL]-(last) RETURN last.indicator, last.chrom, last.length, last.start, last.end"
+        result_last_exon = graph.data(cypher_last_exon)
+        for r in result_last_exon:
+            exonCounts[r['last.indicator']]['count'] = samfile.count(r['last.chrom'], r['last.start'], r['last.end'])
+            exonCounts[r['last.indicator']]['length'] = r['last.length']
         return exonCounts
 
     def utr_read_counts(self, bamfile):
