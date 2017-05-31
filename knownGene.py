@@ -37,16 +37,35 @@ class knownGene():
 
         ''' For rest of the exons '''
         cypher = "MATCH (n:knownGene{ucscGene:'" + self.ucscGene + \
-                 "'})-[:E1]-(exon1)-[:EE*]-(exon) RETURN exon.indicator, exon.chrom, exon.start, exon.end, exon.length"
+                 "'})-[:E1]-(exon1)-[:EE*]-(exon) RETURN n.exonNum, n.strand, n.cdsStart, n.cdsEnd, exon.indicator, exon.chrom, exon.start, exon.end, exon.length"
         results = graph.data(cypher)
         for r in results:
-            try:
-                exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['exon.start'], r['exon.end'])
-            except KeyError:
-                print "????????", self.ucscGene, self.geneSymbol, self.exonNum
-                for i in range(len(results)):
-                    print results[i]
-            exonCounts[r['exon.indicator']]['length'] = r['exon.length']
+            if str(r['n.exonNum']) == str(r['exon.indicator'][4:]): # LAST exon -> in order to exclude utr part
+                print "Last exon conductor"
+                print "r['n.exonNum']: ", r['n.exonNum']
+                print "r['exon.indicator'][4:]: ", r['exon.indicator']
+                if r['n.strand'] == '+':
+                    try:
+                        exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['exon.start'], r['n.cdsEnd'])
+                    except:
+                        print "UtR overlaps (+) XXXXXXXXXXXXXXXXXXXX"
+                        exonCounts[r['exon.indicator']]['count'] = 'exclude'
+                        exonCounts[r['exon.indicator']]['length'] = 'exclude'
+                else: # 'n.strand' == '-'
+                    try:
+                        exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['n.cdsStart'], r['exon.end'])
+                    except:
+                        print "UTR overlaps ??????????????????????? (-) strand "
+                        exonCounts[r['exon.indicator']]['count'] = 'exclude'
+                        exonCounts[r['exon.indicator']]['length'] = 'exclude'
+            else:
+                try:
+                    exonCounts[r['exon.indicator']]['count'] = samfile.count(r['exon.chrom'], r['exon.start'], r['exon.end'])
+                except KeyError:
+                    print "????????", self.ucscGene, self.geneSymbol, self.exonNum
+                    for i in range(len(results)):
+                        print results[i]
+                exonCounts[r['exon.indicator']]['length'] = r['exon.length']
         return exonCounts
 
     def utr_read_counts(self, bamfile):

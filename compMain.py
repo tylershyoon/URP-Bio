@@ -20,7 +20,7 @@ def compMain(isknown, bamfile, csvfilename):
         csv_attributes +=[ex+":Cnt", ex+":len", ex+":Cnt/len"]
     writer.writerow(csv_attributes)
 
-    if isknown is True:
+    if isknown is True: # For knownGene
         graph = Graph("http://neo4j:neo4jpwd@localhost:7474")
         cypher = "MATCH (n:knownGene) RETURN n.ucscGene, n.geneSymbol, n.strand, n.exonNum, n.chrom"
         results = graph.data(cypher)
@@ -37,6 +37,9 @@ def compMain(isknown, bamfile, csvfilename):
             csv_row += [U_counts['count'], U_counts['length'], U_div]
             #print "typechecker:", type(each['n.exonNum'])
             for i in range(1, each['n.exonNum']+1):
+                if E_counts['exon'+str(i)]['count'] == 'exclude':
+                    print "3'UTR invades the last exon -> exclude! "
+                    continue
                 csv_row.append(E_counts['exon'+str(i)]['count'])
                 csv_row.append(E_counts['exon'+str(i)]['length'])
                 if E_counts['exon'+str(i)]['length'] != 0:
@@ -46,7 +49,7 @@ def compMain(isknown, bamfile, csvfilename):
                 csv_row.append(E_div)
             writer.writerow(csv_row)
         f.close()
-    else:
+    else: # For unknownGene
         graph = Graph("http://neo4j:neo4jpwd@localhost:7474")
         cypher = "MATCH (u:unknownGene) RETURN u.geneSymbol, u.strand, u.exonNum, u.chrom"
         results = graph.data(cypher)
@@ -75,11 +78,11 @@ def compMain(isknown, bamfile, csvfilename):
             writer.writerow(csv_row)
         f.close()
 
-'''print "CompMain -> j2M/S bam known"
-compMain(True, "J2M.bam","j2m_known.csv")
-compMain(True, "J2S.bam","j2s_known.csv")
-'''
+print "CompMain -> j2M/S bam known"
+compMain(True, "J2M.bam","j2m_known_v3.csv")
+compMain(True, "J2S.bam","j2s_known_v3.csv")
+
 print "CompMain -> j2M/S bam unknown"
-compMain(False, "J2M.bam", "j2m_unknown.csv")
-compMain(False, "J2S.bam", "j2s_unknown.csv")
+compMain(False, "J2M.bam", "j2m_unknown_v3.csv")
+compMain(False, "J2S.bam", "j2s_unknown_v3.csv")
 
