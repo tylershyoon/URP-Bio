@@ -17,7 +17,8 @@ def compMain(isknown, bamfile, csvfilename):
     csv_attributes = ["ucsc","geneSymbol","utr:Cnt","utr:Len","utr:Cnt/Len"]
     for i in range(1, 64):
         ex = "exon" + str(i)
-        csv_attributes +=[ex+":Cnt", ex+":len", ex+":Cnt/len"]
+        #csv_attributes +=[ex+":Cnt", ex+":len", ex+":Cnt/len"]
+        csv_attributes += [ex+":Cnt/len"]
     writer.writerow(csv_attributes)
 
     if isknown is True: # For knownGene
@@ -35,13 +36,12 @@ def compMain(isknown, bamfile, csvfilename):
             else:
                 U_div = 'NaN'
             csv_row += [U_counts['count'], U_counts['length'], U_div]
-            #print "typechecker:", type(each['n.exonNum'])
             for i in range(1, each['n.exonNum']+1):
                 if E_counts['exon'+str(i)]['count'] == 'exclude':
                     print "3'UTR invades the last exon -> exclude! "
                     continue
-                csv_row.append(E_counts['exon'+str(i)]['count'])
-                csv_row.append(E_counts['exon'+str(i)]['length'])
+                #csv_row.append(E_counts['exon'+str(i)]['count'])
+                #csv_row.append(E_counts['exon'+str(i)]['length'])
                 if E_counts['exon'+str(i)]['length'] != 0:
                     E_div = E_counts['exon'+str(i)]['count']/float(E_counts['exon'+str(i)]['length'])
                 else:
@@ -68,8 +68,8 @@ def compMain(isknown, bamfile, csvfilename):
                 U_div = 'NaN'
             csv_row += [U_counts['count'], U_counts['length'], U_div]
             for i in range(1, each['u.exonNum']+1):
-                csv_row.append(E_counts['exon'+str(i)]['count'])
-                csv_row.append(E_counts['exon'+str(i)]['length'])
+                #csv_row.append(E_counts['exon'+str(i)]['count'])
+                #csv_row.append(E_counts['exon'+str(i)]['length'])
                 if E_counts['exon'+str(i)]['length'] != 0:
                     E_div = E_counts['exon'+str(i)]['count']/float(E_counts['exon'+str(i)]['length'])
                 else:
@@ -79,10 +79,10 @@ def compMain(isknown, bamfile, csvfilename):
         f.close()
 
 print "CompMain -> j2M/S bam known"
-compMain(True, "J2M.bam","j2m_known_v3.csv")
-compMain(True, "J2S.bam","j2s_known_v3.csv")
+compMain(True, "J2M.bam","j2m_known_v4.csv")
+compMain(True, "J2S.bam","j2s_known_v4.csv")
 
 print "CompMain -> j2M/S bam unknown"
-compMain(False, "J2M.bam", "j2m_unknown_v3.csv")
-compMain(False, "J2S.bam", "j2s_unknown_v3.csv")
+compMain(False, "J2M.bam", "j2m_unknown_v4.csv")
+compMain(False, "J2S.bam", "j2s_unknown_v4.csv")
 

@@ -11,7 +11,7 @@ plotly.tools.set_credentials_file(username='tylershyoon', api_key='o5UvcHLyrWqjs
 colors = ['b', 'c', 'y', 'm', 'r']
 rows = [e for e in range(300)]
 tc = []
-with open("j2s_known.csv", "rb") as csvfile:
+with open("j2s_known_v4.csv", "rb") as csvfile:
     reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
     i = 0;
     for row in reader:
@@ -23,7 +23,7 @@ with open("j2s_known.csv", "rb") as csvfile:
         i+=1
         tc.append(row[0].split(',')[0]+":"+row[0].split(',')[1])
 
-with open("j2s_unknown.csv", "rb") as csvfile:
+with open("j2s_unknown_v4.csv", "rb") as csvfile:
     reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in reader:
         if row[0].split(',')[0] in ['ucsc',  'bamfile']:
