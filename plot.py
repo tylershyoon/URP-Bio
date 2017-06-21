@@ -5,7 +5,7 @@ import plotly
 import plotly.plotly as py
 import plotly.tools as tls
 import plotly.graph_objs as go
-plotly.tools.set_credentials_file(username='tylershyoon', api_key='o5UvcHLyrWqjsTjvTNUL')
+plotly.tools.set_credentials_file(username='tylershyoon', api_key='o7KROcARRCiNcGLa1jm0')
 # Learn about API authentication here: https://plot.ly/python/getting-started
 # Find your api_key here: https://plot.ly/settings/api
 colors = ['b', 'c', 'y', 'm', 'r']
@@ -13,7 +13,7 @@ rows = [e for e in range(300)]
 tc = []
 with open("j2s_known_v4.csv", "rb") as csvfile:
     reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-    i = 0;
+    i = 0
     for row in reader:
         if row[0].split(',')[0] in ['ucsc',  'bamfile']:
             continue
